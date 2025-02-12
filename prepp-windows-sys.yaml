@@ -1,0 +1,26 @@
+  hosts: windowshosts
+  gather_facts: no
+  tasks:
+    - name: install hyper-v with GUI
+      ansible.windows.win_feature:
+        name:
+        - hyper-v
+        - hyper-v-tools
+        - hyper-v-powershell
+      state: present
+      include_management_tools: yes
+      include_sub_features: yes
+      register: install_result
+
+    - name: reboot if hyper-v was installed
+      ansible.windows.win_reboot:
+      when: install_result.reboot_required
+
+    - name: wait for winvm to come back online
+      pause:
+        seconds: 120
+
+    - name: checkalive
+      ansible.windows.win_ping:
+        data: pong
+        
