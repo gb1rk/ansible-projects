@@ -1,0 +1,104 @@
+- name: prepp-linux-sys
+  hosts: myhost
+  become: true
+  tasks:
+
+   - name: set selinux to permissive
+     ansible.builtin.selinux:
+       policy: targeted
+       state: permissive
+
+   - name: install system updates
+     ansible.builtin.yum:
+      name: '*'
+      state: latest
+      update_cache: yes
+      when:
+        - ansible_distribution == 'almalinux'
+        - ansible_distribution_major_version == '9'
+
+   - name: create local user
+     user:
+        name: '*SNIP*'
+        state: present
+        shell: /bin/bash
+        password: "{{ '*SNIP*' | password_hash('sha512') }}"
+
+   - name: add user to sudoers
+     user:
+        name: '*SNIP*'
+        groups: wheel
+        append: yes
+
+   - name: install packages and dependencies
+     ansible.builtin.yum:
+      name:
+        - epel-release
+        - vim
+        - wget
+        - curl
+        - net-tools
+        - bind-utils
+        - telnet
+        - tcpdump
+        - nmap
+        - traceroute
+        - lsof
+        - strace
+        - sysstat
+        - htop
+        - iotop
+        - iftop
+        - iptraf-ng
+        - mtr
+        - openssl
+        - haproxy
+        - docker
+        - docker-ce
+        - docker-ce-cli
+        - docker-buildx-plugin
+        - docker-compose
+        - containerd.io
+      state: latest
+      update_cache: yes
+      when:
+        - ansible_distribution == 'almalinux'
+        - ansible_distribution_major_version == '9'
+      become: true
+
+   - name: create docker group
+     ansible.builtin.group:
+        name: "{{ '*SNIP*' }}"
+        state: present
+
+   - name: add user to docker group
+     ansible.builtin.user:
+        name: "{{ '*SNIP*' }}"
+        groups: docker
+        append: yes
+
+   - name: enable and start docker service
+     ansible.builtin.systemd:
+        name: docker
+        enabled: yes
+        state: started
+     loop:
+       - docker
+       - containerd
+
+   - name: ensure docker is running
+     ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+   - name: create directories
+     ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+     loop:
+        - /tmp/downloads
+        - /home/*SNIP*/scp_files
+        - /home/*SNIP*/scripts
+        - /home/*SNIP*/logs
+        - /home/*SNIP*/certs
