@@ -1,5 +1,5 @@
 - name: prepp-linux-sys
-  hosts: myhost
+  hosts: almahosts
   become: true
   tasks:
 
