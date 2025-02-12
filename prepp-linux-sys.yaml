@@ -3,6 +3,13 @@
   become: true
   tasks:
 
+   - name: ping hosts
+     ansible.builtin.ping:
+    
+   - name: print message
+     ansible.builtin.debug:
+       msg: "connection succeeded"
+
    - name: set selinux to permissive
      ansible.builtin.selinux:
        policy: targeted
@@ -102,3 +109,8 @@
         - /home/*SNIP*/scripts
         - /home/*SNIP*/logs
         - /home/*SNIP*/certs
+
+   - name: set selinux to enforced
+     ansible.builtin.selinux:
+       policy: targeted
+       state: enforced
