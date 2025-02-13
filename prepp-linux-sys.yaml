@@ -114,3 +114,14 @@
      ansible.builtin.selinux:
        policy: targeted
        state: enforced
+
+   - name: reboot system
+     ansible.builtin.reboot:
+      reboot_timeout: 300
+      reboot_msg: "rebooting system"
+      test_command: uptime
+      connect_timeout: 30
+      post_reboot_delay: 60
+      pre_reboot_delay: 30
+      msg: "rebooting system"
+      when: ansible_distribution == 'almalinux' and ansible_distribution_major_version == '9'
